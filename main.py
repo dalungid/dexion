@@ -1,6 +1,7 @@
 import os
 from tools.wp_brute import WordPressBruteForcer
 from tools.finder import ShellFinder
+from tools.removeduplicat import process_files_in_config_folder  # Impor fungsi dari removeduplicat.py
 from dotenv import load_dotenv
 from rich.console import Console
 from rich.panel import Panel
@@ -25,16 +26,15 @@ def show_menu():
         Text("╚═════╝ ╚══════╝╚═╝  ╚═╝╚═╝ ╚═════╝ ╚═╝  ╚═══╝\n", style="yellow"),
         justify="center"
     )
-
     # Menu items
     menu_text = Text.assemble(
         Text("\n[1] ", style="cyan") + Text("WordPress Bruteforce", style=menu_style),
         Text("\n[2] ", style="cyan") + Text("Shell Finder", style=menu_style),
+        Text("\n[3] ", style="cyan") + Text("Remove Duplicates from Files", style=menu_style),  # Menu baru
         Text("\n[99] ", style="cyan") + Text("Show Configuration", style=menu_style),
         Text("\n[00] ", style="cyan") + Text("Exit Program\n", style=menu_style),
         justify="center"
     )
-
     # Panels
     dexion_panel = Panel(
         dexion_art,
@@ -54,7 +54,6 @@ def show_menu():
         padding=(1, 5),
         width=80
     )
-
     console.print(dexion_panel)
     console.print(menu_panel)
 
@@ -65,7 +64,7 @@ def main():
     
     brute = WordPressBruteForcer()
     finder = ShellFinder()
-
+    
     while True:
         show_menu()
         choice = console.input("\n[bold yellow]>> [/]").strip()
@@ -76,6 +75,17 @@ def main():
         elif choice == '2':
             finder.load_resources()
             finder.start_scan()
+            console.input("\n[bold][Press Enter to continue...][/]")
+        elif choice == '3':  # Opsi baru untuk menghapus duplikat
+            config_folder = "config"
+            if not os.path.exists(config_folder) or not os.listdir(config_folder):
+                console.print("[bold red]Folder 'config' kosong atau tidak ditemukan.[/]")
+                console.input("\n[bold][Press Enter to continue...][/]")
+                continue
+    
+            console.print("[bold green]Memproses file di folder 'config' untuk menghapus duplikat...[/]")
+            process_files_in_config_folder(config_folder)
+            console.print("[bold green]Proses selesai![/]")
             console.input("\n[bold][Press Enter to continue...][/]")
         elif choice == '99':
             console.print("\n[bold underline]CURRENT CONFIGURATION[/]")
@@ -96,6 +106,7 @@ def main():
             break
         else:
             console.print("[bold red]Invalid option![/]")
+            console.input("\n[bold][Press Enter to continue...][/]")
 
 if __name__ == "__main__":
     main()
